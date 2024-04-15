@@ -133,7 +133,7 @@ void runNN(struct neuralNetwork *nn, double *inputData) {
     for (int l = 1; l < nn->hiddenLayerCount; l++) {
         for (int n = 0; n < nn->hidden[l]->neuronCount; n++) {
             nn->hidden[l]->neurons[n]->output = nn->hidden[l]->neurons[n]->bias;
-            for (int i = 0; i < nn->hidden[l-1]->neuronCount; i++) {
+            for (int i = 0; i < nn->hidden[l - 1]->neuronCount; i++) {
                 nn->hidden[l]->neurons[n]->output += nn->hidden[l-1]->neurons[i]->output * nn->hidden[l-1]->neurons[i]->weights[n];
             }
             nn->hidden[l]->neurons[n]->output = activation(nn->hidden[l]->neurons[n]->output); // Runs activation function
@@ -173,14 +173,45 @@ void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double *trai
 
 }
 
-
 // Weights & Biases tools
-void asignWeights(struct neuralNetwork *nn, double* weights) {
-
+void assignWeights(struct neuralNetwork *nn, FILE *file) {
+    
 }
 
-void exportWeights(struct neuralNetwork *nn) {
+void exportWeights(struct neuralNetwork *nn, char filepath[43]) {
+    FILE *file;
+    file = fopen(filepath, "wb");
+    if (file == NULL) {
+        printf("Invalid file. Cannot read %s\n", filepath);
+        assert(0);
+    }
+    
+    // Writes first layer bias and input weights
+    for (int n = 0; n < nn->hidden[0]->neuronCount; n++) {
+        fwrite(&nn->hidden[0]->neurons[n]->bias, sizeof(double), 1, file); // Write bias
+        for (int i = 0; i < nn->input->neuronCount; i++) {
+            fwrite(&nn->input->neurons[i]->weights[n], sizeof(double), 1, file);
+        }
+    }
 
+    // Writes hidden neuron biases and hidden layer weights up to the last
+    for (int l = 1; l < nn->hiddenLayerCount; l++) {
+        for (int n = 0; n < nn->hidden[l]->neuronCount; n++) {
+            fwrite(&nn->hidden[l]->neurons[n]->bias, sizeof(double), 1, file);
+            for (int i = 0; i < nn->hidden[l - 1]->neuronCount; i++) {
+                fwrite(&nn->hidden[l-1]->neurons[i]->weights[n], sizeof(double), 1, file); // Go through all past neurons and give their bias to this one
+            }
+        }
+    }
+
+    // output biases and last hidden layer weights
+    for (int n = 0; n < nn->output->neuronCount; n++) {
+        fwrite(&nn->output->neurons[n]->bias, sizeof(double), 1, file);
+        for (int i = 0; i < nn->hidden[nn->hiddenLayerCount - 1]->neuronCount; i++) {
+            fwrite(&nn->hidden[nn->hiddenLayerCount - 1]->neurons[i]->weights[n], sizeof(double), 1, file);
+        }
+    }
+    fclose(file);
 }
 
 

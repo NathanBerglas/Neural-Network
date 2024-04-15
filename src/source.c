@@ -34,6 +34,7 @@ int readCommand() {
 // You may use the following comamnds at start:
 // NEW <int inputs> <int outputs> <int hidden layer count> <int*: hidden layer nodes>
 //      Creates a new neural network
+//      Restrictions: Max 20 layers
 // LOAD <file containing inputs>
 //      Loads a neural network from file
 //
@@ -73,7 +74,30 @@ int main(void) {
         free(hiddenLayerNeuronCount);
         break;
     } case CMD_LOAD: {
-
+        char filepath[43];
+        strcpy(filepath,"");
+        strcat(filepath, "weights/");    
+        char stem[30];
+        scanf("%s", stem);
+        strncat(filepath, stem, 30);
+        strcat(filepath, ".bin");
+        FILE *file;
+        file = fopen(filepath, "rb");
+        if (file == NULL) {
+            printf("Invalid file. Cannot read %s\n", filepath);
+            return 0;
+        }
+        int hiddenLayerNeurons[20];
+        fread(&inputCount, sizeof(int), 1, file);
+        fread(&outputCount, sizeof(int), 1, file);
+        fread(&hiddenLayerCount, sizeof(int), 1, file);
+        for(int i = 0; i < hiddenLayerCount; i++) {
+            fread(hiddenLayerNeurons + i, sizeof(int), 1, file);
+        }
+        printf("inputs: %d, hidden layers: %d, and outputs %d, and first hidden neurons %d\n", inputCount, hiddenLayerCount, outputCount, hiddenLayerNeurons[0]);
+        struct neuralNetwork *nn = nnInit(inputCount, hiddenLayerCount, hiddenLayerNeurons, outputCount);
+        assignWeights(nn, file);
+        fclose(file);
         break;
     } default: {
         return 0;
@@ -85,7 +109,6 @@ int main(void) {
     while (cmd != INVALID_SYMBOL) {
         switch (cmd) {
         case CMD_RUN: {
-            printf("running");
             int inputCount = inputsNN(nn);
             double *inputs = malloc(inputCount * sizeof(double));
             for (int i = 0; i < inputCount; i++) {
@@ -98,12 +121,18 @@ int main(void) {
         } case CMD_TRAIN: {
 
             break;
-        } case CMD_EXPORT_WEIGHTS:
-
+        } case CMD_EXPORT_WEIGHTS: {
+            char filepath[43];
+            strcpy(filepath,"");
+            strcat(filepath, "weights/");    
+            char stem[30];
+            scanf("%s", stem);
+            strncat(filepath, stem, 30);
+            strcat(filepath, ".bin");
+            exportWeights(nn, filepath);
             break;
-        default: {
-            printf("WEIRD! %d\n", cmd);
-            return 0;
+        } default: {
+            return 1;
             break;
         } }
         cmd = readCommand();
