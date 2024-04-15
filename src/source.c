@@ -94,8 +94,7 @@ int main(void) {
         for(int i = 0; i < hiddenLayerCount; i++) {
             fread(hiddenLayerNeurons + i, sizeof(int), 1, file);
         }
-        printf("inputs: %d, hidden layers: %d, and outputs %d, and first hidden neurons %d\n", inputCount, hiddenLayerCount, outputCount, hiddenLayerNeurons[0]);
-        struct neuralNetwork *nn = nnInit(inputCount, hiddenLayerCount, hiddenLayerNeurons, outputCount);
+        nn = nnInit(inputCount, hiddenLayerCount, hiddenLayerNeurons, outputCount);
         assignWeights(nn, file);
         fclose(file);
         break;
@@ -129,7 +128,14 @@ int main(void) {
             scanf("%s", stem);
             strncat(filepath, stem, 30);
             strcat(filepath, ".bin");
-            exportWeights(nn, filepath);
+            FILE *file;
+            file = fopen(filepath, "wb");
+            if (file == NULL) {
+                printf("Invalid file. Cannot read %s\n", filepath);
+                return 0;
+            }
+            exportWeights(nn, file);
+            fclose(file);
             break;
         } default: {
             return 1;

@@ -15,4 +15,4 @@ void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double *trai
 
 // Weights & Biases tools
 void assignWeights(struct neuralNetwork *nn, FILE *file);
-void exportWeights(struct neuralNetwork *nn, char filepath[43]);
+void exportWeights(struct neuralNetwork *nn, FILE *file);
