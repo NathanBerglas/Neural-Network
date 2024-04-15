@@ -55,9 +55,9 @@ int main(void) {
     cmd = readCommand();
     struct neuralNetwork *nn = NULL;
 
-    switch (cmd)
-    {
-    case CMD_NEW:
+    // Load or create nn
+    switch (cmd) {
+    case CMD_NEW: {
         scanf("%d", &cmd); // Get input layer count
         inputCount = cmd;
         scanf("%d", &cmd); // Get output layer count;
@@ -72,30 +72,40 @@ int main(void) {
         nn = nnInit(inputCount, hiddenLayerCount, hiddenLayerNeuronCount, outputCount);
         free(hiddenLayerNeuronCount);
         break;
-    case CMD_LOAD:
+    } case CMD_LOAD: {
 
         break;
-    default:
+    } default: {
         return 0;
         break;
-    }
+    } }
 
+    // Normal Operation
     cmd = readCommand();
-    while (readCommand() != INVALID_SYMBOL) {
+    while (cmd != INVALID_SYMBOL) {
         switch (cmd) {
-        case CMD_RUN:
-            
+        case CMD_RUN: {
+            printf("running");
+            int inputCount = inputsNN(nn);
+            double *inputs = malloc(inputCount * sizeof(double));
+            for (int i = 0; i < inputCount; i++) {
+                scanf("%lf", inputs + i);
+            }
+            runNN(nn, inputs);
+            free(inputs);
+            printNN(nn);
             break;
-        case CMD_TRAIN:
+        } case CMD_TRAIN: {
 
             break;
-        case CMD_EXPORT_WEIGHTS:
+        } case CMD_EXPORT_WEIGHTS:
 
             break;
-        default:
+        default: {
+            printf("WEIRD! %d\n", cmd);
             return 0;
             break;
-        }
+        } }
         cmd = readCommand();
     }
     nnFree(nn);

@@ -4,7 +4,7 @@ DEF = "-DNODEF"
 OPT = -O0
 CFLAGS = -fdiagnostics-color=always -fansi-escape-codes -g -std=c17 -Wall -Werror -I include/ -MMD ${OPT} ${DEF}
 VFLAGS = --log-file="results/valgrindOut.txt" --leak-check=full --show-leak-kinds=all --track-origins=yes
-LIB = $(wildcard lib/*.o)
+LIB = $(wildcard lib/*.o) -lm
 SRC = $(wildcard src/*.c)
 OBJECTS = $(SRC:src/%.c=bin/%.o)
 DEPENDS = $(OBJECTS:.o=.d)

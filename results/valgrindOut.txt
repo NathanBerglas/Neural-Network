@@ -1,15 +1,15 @@
-==76449== Memcheck, a memory error detector
-==76449== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==76449== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-==76449== Command: ./bin/neuralNetwork.exe
-==76449== Parent PID: 76448
-==76449== 
-==76449== 
-==76449== HEAP SUMMARY:
-==76449==     in use at exit: 0 bytes in 0 blocks
-==76449==   total heap usage: 80 allocs, 80 frees, 7,140 bytes allocated
-==76449== 
-==76449== All heap blocks were freed -- no leaks are possible
-==76449== 
-==76449== For lists of detected and suppressed errors, rerun with: -s
-==76449== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==135646== Memcheck, a memory error detector
+==135646== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==135646== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==135646== Command: ./bin/neuralNetwork.exe
+==135646== Parent PID: 135644
+==135646== 
+==135646== 
+==135646== HEAP SUMMARY:
+==135646==     in use at exit: 0 bytes in 0 blocks
+==135646==   total heap usage: 82 allocs, 82 frees, 8,180 bytes allocated
+==135646== 
+==135646== All heap blocks were freed -- no leaks are possible
+==135646== 
+==135646== For lists of detected and suppressed errors, rerun with: -s
+==135646== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

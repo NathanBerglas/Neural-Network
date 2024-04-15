@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include <assert.h>
 
@@ -96,8 +97,76 @@ void nnFree(struct neuralNetwork *nn) {
 }
 
 // NN tools
-void runNN(struct neuralNetwork *nn, double *input) {
 
+double sigmoid(double x) {
+    return 1 / (1 + exp(-x));
+}
+
+double activation(double x) {
+    // Sigmoid
+    return sigmoid(x);
+}
+
+// required for opaque structure
+int inputsNN(struct neuralNetwork *nn) {
+    return nn->input->neuronCount;
+}
+
+// Forward Propagation
+void runNN(struct neuralNetwork *nn, double *inputData) {
+    // Starts at input. Assigns input neurons given input
+    for (int n = 0; n < nn->input->neuronCount; n++) {
+        nn->input->neurons[n]->output = inputData[n];
+    }
+
+    // Propogates through the first layer with input from input
+    for (int n = 0; n < nn->hidden[0]->neuronCount; n++) {
+        nn->hidden[0]->neurons[n]->output = nn->hidden[0]->neurons[n]->bias; // Start output at bias
+        for (int i = 0; i < nn->input->neuronCount; i++) {
+            nn->hidden[0]->neurons[n]->output += nn->input->neurons[i]->output * nn->input->neurons[i]->weights[n]; // Add each input from previous nodes to output
+        } // Results in output = bias + sum of inputs from previous nodes * weights
+        nn->hidden[0]->neurons[n]->output = activation(nn->hidden[0]->neurons[n]->output); // Runs activation function
+    }
+
+    // Propogates through hidden layers until output
+    // Incredibly similar as last bit of code, just now takes input from last hidden layer, not input
+    for (int l = 1; l < nn->hiddenLayerCount; l++) {
+        for (int n = 0; n < nn->hidden[l]->neuronCount; n++) {
+            nn->hidden[l]->neurons[n]->output = nn->hidden[l]->neurons[n]->bias;
+            for (int i = 0; i < nn->hidden[l-1]->neuronCount; i++) {
+                nn->hidden[l]->neurons[n]->output += nn->hidden[l-1]->neurons[i]->output * nn->hidden[l-1]->neurons[i]->weights[n];
+            }
+            nn->hidden[l]->neurons[n]->output = activation(nn->hidden[l]->neurons[n]->output); // Runs activation function
+        }
+    }
+
+    // Propogates from final hidden layer to output
+    // Still same code
+    for (int n = 0; n < nn->output->neuronCount; n++) {
+        nn->output->neurons[n]->output = nn->output->neurons[n]->bias;
+        for (int i = 0; i < nn->hidden[nn->hiddenLayerCount - 1]->neuronCount; i++) {
+            nn->output->neurons[n]->output += nn->hidden[nn->hiddenLayerCount - 1]->neurons[i]->output * nn->hidden[nn->hiddenLayerCount - 1]->neurons[i]->weights[n];
+        }
+        nn->output->neurons[n]->output = activation(nn->output->neurons[n]->output); // Runs activation function
+    }
+}
+
+void printNN(struct neuralNetwork *nn) {
+    printf("Inputs: ");
+    for (int i = 0; i < nn->input->neuronCount; i++) {
+        if (i + 1 != nn->input->neuronCount) {
+            printf("%lf, ", nn->input->neurons[i]->output);
+        } else { 
+            printf("%lf\nOutputs: ", nn->input->neurons[i]->output);
+        }
+    }
+    for (int o = 0; o < nn->output->neuronCount; o++) {
+        if (o + 1 != nn->output->neuronCount) {
+            printf("%lf, ", nn->output->neurons[o]->output);
+        } else {
+            printf("%lf\n", nn->output->neurons[o]->output);
+        }
+    }
 }
 
 void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double *trainingInputs, double *trainingOutputs) {

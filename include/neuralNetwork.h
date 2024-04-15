@@ -8,7 +8,9 @@ struct neuralNetwork *nnInit(int inputNeuronCount, int hiddenLayerCount, int *hi
 void nnFree(struct neuralNetwork *nn);
 
 // NN Tools
+int inputsNN(struct neuralNetwork *nn);
 void runNN(struct neuralNetwork *nn, double *input);
+void printNN(struct neuralNetwork *nn);
 void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double *trainingInputs, double *trainingOutputs);
 
 // Weights & Biases tools
