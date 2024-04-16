@@ -34,16 +34,15 @@ int readCommand() {
 // You may use the following comamnds at start:
 // NEW <int inputs> <int outputs> <int hidden layer count> <int*: hidden layer nodes>
 //      Creates a new neural network
-//      Restrictions: Max 20 layers
-// LOAD <file containing inputs>
-//      Loads a neural network from file
+// LOAD <file stem>
+//      Loads a neural network weights and biases from file
 //
 // You may use the following commands during use:
 // RUN <double* input>
-//      Runs the neural network. Recomended to be run post training or assigning weights.
+//      Runs the neural network (Forward propogation). Recomended to be run post training or assigning weights.
 // TRAIN <double: lr> <int: epochs> <file containing inputs> <file containg outputs>
 //      Trains the neural network based off of training data.
-// EXPORT
+// EXPORT <file stem>
 //      Exports current weights and biases. Reccomended to be done after training
 int main(void) {
 
@@ -78,7 +77,7 @@ int main(void) {
         strcpy(filepath,"");
         strcat(filepath, "weights/");    
         char stem[30];
-        scanf("%s", stem);
+        scanf("%29s", stem);
         strncat(filepath, stem, 30);
         strcat(filepath, ".bin");
         FILE *file;
@@ -87,14 +86,15 @@ int main(void) {
             printf("Invalid file. Cannot read %s\n", filepath);
             return 0;
         }
-        int hiddenLayerNeurons[20];
         fread(&inputCount, sizeof(int), 1, file);
         fread(&outputCount, sizeof(int), 1, file);
         fread(&hiddenLayerCount, sizeof(int), 1, file);
+        int hiddenLayerNeurons[] = malloc(hiddenLayerCount * sizeof(int));
         for(int i = 0; i < hiddenLayerCount; i++) {
             fread(hiddenLayerNeurons + i, sizeof(int), 1, file);
         }
         nn = nnInit(inputCount, hiddenLayerCount, hiddenLayerNeurons, outputCount);
+        free(hiddenLayerNeurons);
         assignWeights(nn, file);
         fclose(file);
         break;
@@ -118,7 +118,7 @@ int main(void) {
             printNN(nn);
             break;
         } case CMD_TRAIN: {
-
+                
             break;
         } case CMD_EXPORT_WEIGHTS: {
             char filepath[43];

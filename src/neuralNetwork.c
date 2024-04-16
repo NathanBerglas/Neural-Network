@@ -6,7 +6,7 @@
 #include "neuralNetwork.h"
 
 struct neuron {
-    double *weights;
+    double *weights; // Length is the # of neurons in the next layer
     double bias;
     double output;
 };
@@ -18,7 +18,7 @@ struct layer {
 
 struct neuralNetwork {
     struct layer *input;
-    struct layer** hidden;
+    struct layer** hidden; // Length is hiddenLayerCount
     int hiddenLayerCount;
     struct layer *output;
 };
@@ -34,7 +34,15 @@ double biasInit() {
 
 struct neuron *nInit(int neuronCountNextLayer) {
     struct neuron *n = malloc(sizeof(struct neuron));
+    if (!n) {
+        printf("ERROR: Not enough stack memory! n\n");
+        return 1;
+    }
     n->weights = malloc(neuronCountNextLayer * sizeof(double));
+    if (!n->weights) {
+        printf("ERROR: Not enough stack memory! n->weights\n");
+        return 1;
+    }
     for (int nextn = 0; nextn < neuronCountNextLayer; nextn++) {
         n->weights[nextn] = weightInit();
     }
@@ -44,7 +52,15 @@ struct neuron *nInit(int neuronCountNextLayer) {
 
 struct layer *layerInit(int neuronCount, int neuronCountNextLayer) {
     struct layer *l = malloc(sizeof(struct layer));
+    if (!l) {
+        printf("ERROR: Not enough stack memory! l\n");
+        return 1;
+    }
     l->neurons = malloc(neuronCount * sizeof(struct neuron*));
+    if (!l->neurons) {
+        printf("ERROR: Not enough stack memory! l->neurons\n");
+        return 1;
+    }
     assert(l);
     for (int n = 0; n < neuronCount; n++) {
         l->neurons[n] = nInit(neuronCountNextLayer);
@@ -55,9 +71,19 @@ struct layer *layerInit(int neuronCount, int neuronCountNextLayer) {
 
 struct neuralNetwork *nnInit(int inputNeuronCount, int hiddenLayerCount, int *hiddenLayerNeuronCount, int outputNeuronCount) {
     struct neuralNetwork *nn = malloc(sizeof(struct neuralNetwork));
-    assert(nn);
+    if (!nn) {
+        printf("ERROR: Not enough stack memory! nn\n");
+        return 1;
+    }
+    assert(inputNeuronCount > 0);
+    assert(hiddenLayerCount >= 0);
+    assert(outputNeuronCount > 0);
     nn->input = layerInit(inputNeuronCount, hiddenLayerNeuronCount[0]);
     nn->hidden = malloc(hiddenLayerCount * sizeof(struct layer*));
+    if (!nn->hidden) {
+        printf("ERROR: Not enough stack memory! nn->hidden\n");
+        return 1;
+    }
     for (int hl = 0; hl < hiddenLayerCount; hl++) {
         if (hl + 1 == hiddenLayerCount) {
             nn->hidden[hl] = layerInit(hiddenLayerNeuronCount[hl], outputNeuronCount);
@@ -109,11 +135,15 @@ double activation(double x) {
 
 // required for opaque structure
 int inputsNN(struct neuralNetwork *nn) {
+    assert(nn);
     return nn->input->neuronCount;
 }
 
 // Forward Propagation
 void runNN(struct neuralNetwork *nn, double *inputData) {
+    assert(nn);
+    assert(inputData);
+
     // Starts at input. Assigns input neurons given input
     for (int n = 0; n < nn->input->neuronCount; n++) {
         nn->input->neurons[n]->output = inputData[n];
@@ -169,7 +199,10 @@ void printNN(struct neuralNetwork *nn) {
     }
 }
 
-void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double *trainingInputs, double *trainingOutputs) {
+void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **trainingInputs, double **trainingOutputs) {
+    assert(nn);
+    assert(lr > 0);
+    assert(epochs > 0);
 
 }
 
