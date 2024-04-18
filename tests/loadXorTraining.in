@@ -1,0 +1,6 @@
+LOAD xor
+RUN 0.0 0.0
+RUN 0.0 1.0
+RUN 1.0 0.0
+RUN 1.0 1.0
+ 

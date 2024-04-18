@@ -24,6 +24,11 @@ void nnFree(struct neuralNetwork *nn);
 //      Time:   O(1)
 int inputsNN(struct neuralNetwork *nn);
 
+// outputsNN: The number of output nodes in a nn
+//      Effects: Returns an integer
+//      Time:   O(1)
+int outputsNN(struct neuralNetwork *nn);
+
 // runNN: Runs the neural network with given inputs. Uses forward propogation
 //      Requires: size of input is equal ot the input nodes in nn
 //      Time: O(n * m^2) Where n is the number of hidden layers and m is the average neuron count per layer
@@ -38,7 +43,7 @@ void printNN(struct neuralNetwork *nn);
 //      Effects: Mutates nn
 //      Requires: lr > 0, epochs > 0, size of *trainingInputs is equal to the number of input nodes, size of *trainingOutputs is equal to the number of output nodes
 //      Time: O(???)
-void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **trainingInputs, double **trainingOutputs);
+void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **trainingInputs, double **trainingOutputs, int trainingSets);
 
 // Weights & Biases tools
 

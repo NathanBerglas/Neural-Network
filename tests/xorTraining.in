@@ -1,0 +1,4 @@
+NEW 2 1 2 16 16
+TRAIN 0.3 10000 xor
+EXPORT xor
+

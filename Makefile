@@ -6,7 +6,9 @@ CFLAGS = -fdiagnostics-color=always -fansi-escape-codes -g -std=c17 -Wall -Werro
 VFLAGS = --log-file="results/valgrindOut.txt" --leak-check=full --show-leak-kinds=all --track-origins=yes
 LIB = $(wildcard lib/*.o) -lm
 SRC = $(wildcard src/*.c)
+
 OBJECTS = $(SRC:src/%.c=bin/%.o)
+
 DEPENDS = $(OBJECTS:.o=.d)
 TEST_FILES := $(wildcard tests/*.in)
 
@@ -29,15 +31,21 @@ test: ${EXEC}
 	done
 
 valgrind: ${EXEC}
-	valgrind ${VFLAGS} ./${EXEC} < tests/simple.in
-
-valgrindT: ${EXEC}
 	@if [ -z "$(TEST)" ]; then \
-		echo "Usage: make valgrindT TEST=<test_name>"; \
+		echo "Usage: make valgrind TEST=<test_name>"; \
 	fi
 	valgrind ${VFLAGS} ./${EXEC} < tests/$(TEST).in
 
-.PHONY: run clean test
+convert: bin/txtToBin.o
+	./bin/txtToBin.o $(FILE)
+
+.PHONY: run clean test sanitize valgrind convert
 
 clean:
 		rm -f bin/*.o bin/*.d ${EXEC}
+
+# other tools not included:
+#./bin/txtToBin stem
+#	Converts any txt training data to binary to be used by neural network training
+#gcc src/*.c -I include/ -g -Wall -Werror -fsanitize=address -lm -o bin/gccNeuralNetwork.exe
+#	Compiles for address sanitizer to help fix memory errors

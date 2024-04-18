@@ -23,7 +23,7 @@ int readCommand() {
     } else if (strcmp(input, "RUN") == 0) {
         return CMD_RUN;
     } else if (strcmp(input, "TRAIN") == 0) {
-        return CMD_RUN;
+        return CMD_TRAIN;
     } else if (strcmp(input, "EXPORT") == 0) {
         return CMD_EXPORT_WEIGHTS;
     } else {
@@ -40,7 +40,7 @@ int readCommand() {
 // You may use the following commands during use:
 // RUN <double* input>
 //      Runs the neural network (Forward propogation). Recomended to be run post training or assigning weights.
-// TRAIN <double: lr> <int: epochs> <file containing inputs> <file containg outputs>
+// TRAIN <double: lr> <int: epochs> <file containing training data>
 //      Trains the neural network based off of training data.
 // EXPORT <file stem>
 //      Exports current weights and biases. Reccomended to be done after training
@@ -74,8 +74,7 @@ int main(void) {
         break;
     } case CMD_LOAD: {
         char filepath[43];
-        strcpy(filepath,"");
-        strcat(filepath, "weights/");    
+        strcpy(filepath, "weights/");    
         char stem[30];
         scanf("%29s", stem);
         strncat(filepath, stem, 30);
@@ -89,7 +88,7 @@ int main(void) {
         fread(&inputCount, sizeof(int), 1, file);
         fread(&outputCount, sizeof(int), 1, file);
         fread(&hiddenLayerCount, sizeof(int), 1, file);
-        int hiddenLayerNeurons[] = malloc(hiddenLayerCount * sizeof(int));
+        int *hiddenLayerNeurons = malloc(hiddenLayerCount * sizeof(int));
         for(int i = 0; i < hiddenLayerCount; i++) {
             fread(hiddenLayerNeurons + i, sizeof(int), 1, file);
         }
@@ -102,7 +101,6 @@ int main(void) {
         return 0;
         break;
     } }
-
     // Normal Operation
     cmd = readCommand();
     while (cmd != INVALID_SYMBOL) {
@@ -118,12 +116,68 @@ int main(void) {
             printNN(nn);
             break;
         } case CMD_TRAIN: {
-                
+            // Training data
+            double lr;
+            scanf("%lf", &lr);
+            int epochs;
+            scanf("%d", &epochs);
+            // File buisness
+            char filepath[43];
+            strcpy(filepath, "training/");    
+            char stem[30];
+            scanf("%s", stem);
+            strncat(filepath, stem, 30);
+            strcat(filepath, ".bin");
+            FILE *file;
+            file = fopen(filepath, "rb");
+            if (file == NULL) {
+                printf("Invalid file. Cannot read %s\n", filepath);
+                return 0;
+            }
+            // File data
+            int inputNodes = inputsNN(nn);
+            int outputNodes = outputsNN(nn);
+            double *in = malloc(sizeof(double) * inputNodes);
+            double *out = malloc(sizeof(double) * outputNodes);
+            int trainingSets = 0;
+            int maxSets = 4;
+            double **testsIn = malloc(maxSets * sizeof(double*));
+            double **testsOut = malloc(maxSets * sizeof(double*));
+            // Read tests from file
+            while(!feof(file)) {
+                if (fread(in, sizeof(double), inputNodes, file) < inputNodes) {
+                    break;
+                }
+                fread(out, sizeof(double), outputNodes, file);
+                if (trainingSets + 1 > maxSets) { // Doubling strategy to allow infinite test cases
+                    maxSets *= 2;
+                    testsIn = realloc(testsIn, maxSets * sizeof(double*));
+                    testsOut = realloc(testsIn, maxSets * sizeof(double*));
+                }
+                testsIn[trainingSets] = malloc(sizeof(double) * inputNodes);
+                testsOut[trainingSets] = malloc(sizeof(double) * outputNodes);
+                memcpy(testsIn[trainingSets], in, sizeof(double) * inputNodes);
+                memcpy(testsOut[trainingSets], out, sizeof(double) * outputNodes);
+                trainingSets++;
+            }
+            free(in);
+            free(out);
+            testsIn = realloc(testsIn, trainingSets * sizeof(double*)); // Readjust to correct size
+            testsOut = realloc(testsOut, trainingSets * sizeof(double*)); 
+            // Train NN
+            
+            trainNN(nn, lr, epochs, testsIn, testsOut, trainingSets);
+            // Clean up
+            for (int i = 0; i < trainingSets; i++) { // Free 'in's and 'out's
+                free(testsIn[i]);
+                free(testsOut[i]);
+            }
+            free(testsIn);
+            free(testsOut);
             break;
         } case CMD_EXPORT_WEIGHTS: {
             char filepath[43];
-            strcpy(filepath,"");
-            strcat(filepath, "weights/");    
+            strcpy(filepath, "weights/");    
             char stem[30];
             scanf("%s", stem);
             strncat(filepath, stem, 30);

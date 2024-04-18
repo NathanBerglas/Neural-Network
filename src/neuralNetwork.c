@@ -36,12 +36,12 @@ struct neuron *nInit(int neuronCountNextLayer) {
     struct neuron *n = malloc(sizeof(struct neuron));
     if (!n) {
         printf("ERROR: Not enough stack memory! n\n");
-        return 1;
+        assert(0);
     }
     n->weights = malloc(neuronCountNextLayer * sizeof(double));
     if (!n->weights) {
         printf("ERROR: Not enough stack memory! n->weights\n");
-        return 1;
+        assert(0);
     }
     for (int nextn = 0; nextn < neuronCountNextLayer; nextn++) {
         n->weights[nextn] = weightInit();
@@ -54,12 +54,12 @@ struct layer *layerInit(int neuronCount, int neuronCountNextLayer) {
     struct layer *l = malloc(sizeof(struct layer));
     if (!l) {
         printf("ERROR: Not enough stack memory! l\n");
-        return 1;
+        assert(0);
     }
     l->neurons = malloc(neuronCount * sizeof(struct neuron*));
     if (!l->neurons) {
         printf("ERROR: Not enough stack memory! l->neurons\n");
-        return 1;
+        assert(0);
     }
     assert(l);
     for (int n = 0; n < neuronCount; n++) {
@@ -73,7 +73,7 @@ struct neuralNetwork *nnInit(int inputNeuronCount, int hiddenLayerCount, int *hi
     struct neuralNetwork *nn = malloc(sizeof(struct neuralNetwork));
     if (!nn) {
         printf("ERROR: Not enough stack memory! nn\n");
-        return 1;
+        assert(0);
     }
     assert(inputNeuronCount > 0);
     assert(hiddenLayerCount >= 0);
@@ -82,7 +82,7 @@ struct neuralNetwork *nnInit(int inputNeuronCount, int hiddenLayerCount, int *hi
     nn->hidden = malloc(hiddenLayerCount * sizeof(struct layer*));
     if (!nn->hidden) {
         printf("ERROR: Not enough stack memory! nn->hidden\n");
-        return 1;
+        assert(0);
     }
     for (int hl = 0; hl < hiddenLayerCount; hl++) {
         if (hl + 1 == hiddenLayerCount) {
@@ -137,6 +137,12 @@ double activation(double x) {
 int inputsNN(struct neuralNetwork *nn) {
     assert(nn);
     return nn->input->neuronCount;
+}
+
+// required for opaque structure
+int outputsNN(struct neuralNetwork *nn) {
+    assert(nn);
+    return nn->output->neuronCount;
 }
 
 // Forward Propagation
@@ -199,11 +205,21 @@ void printNN(struct neuralNetwork *nn) {
     }
 }
 
-void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **trainingInputs, double **trainingOutputs) {
+void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **trainingInputs, double **trainingOutputs, int trainingSets) {
     assert(nn);
     assert(lr > 0);
     assert(epochs > 0);
-
+    for (int s = 0; s < trainingSets; s++) {
+        printf("Inputs: ");
+        for (int i = 0; i < nn->input->neuronCount; i++) {
+            printf("%lf ", trainingInputs[s][i]);
+        }
+        printf("\nOutputs: ");
+        for (int i = 0; i < nn->output->neuronCount; i++) {
+            printf("%lf ", trainingOutputs[s][i]);
+        }
+        printf("\n");
+    }
 }
 
 // Weights & Biases tools

@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+    FILE *inputFile, *outputFile;
+    double number;
+
+    // Open the text file for reading
+    char filename[42];
+    strcpy(filename, "training/");
+    strcat(filename, argv[1]);
+    strcat(filename, ".txt");
+    inputFile = fopen(filename, "r");
+    if (inputFile == NULL) {
+        printf("Error opening input file %s", filename);
+        return 1;
+    }
+
+    char Bfilename[42];
+    strcpy(Bfilename, "training/");
+    strcat(Bfilename, argv[1]);
+    strcat(Bfilename, ".bin");
+
+    // Open the binary file for writing
+    outputFile = fopen(Bfilename, "wb");
+    if (outputFile == NULL) {
+        printf("Error opening output file %s", Bfilename);
+        fclose(inputFile);
+        return 1;
+    }
+
+    // Read doubles from the text file and write their binary representation to the binary file
+    while (fscanf(inputFile, "%lf", &number) == 1) {
+        fwrite(&number, sizeof(double), 1, outputFile);
+    }
+
+    // Close the files
+    fclose(inputFile);
+    fclose(outputFile);
+
+    printf("Binary file generated successfully.\n");
+
+    return 0;
+}
