@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
+#include <time.h>
 
 #include "neuralNetwork.h"
 
@@ -205,20 +206,71 @@ void printNN(struct neuralNetwork *nn) {
     }
 }
 
+// Fisher-Yates shuffle
+void shuffle(double **arr, double **arr2, int len) {
+    for (int i = 0; i < len - 1; i++) {
+        int index = i + rand() % (len - i);
+        double *temp_set = arr[index];
+        arr[index] = arr[i];
+        arr[i] = temp_set;
+        temp_set = arr2[index];
+        arr2[index] = arr2[i];
+        arr2[i] = temp_set;
+    }
+}
+
+double squaredError(double output, double expected) {
+    return 0.5 * (output - expected) * (output - expected);
+}
+
+double error(double output, double expected) {
+    // squaredError, other options are available
+    return squaredError(output, expected);
+}
+
 void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **trainingInputs, double **trainingOutputs, int trainingSets) {
     assert(nn);
     assert(lr > 0);
     assert(epochs > 0);
-    for (int s = 0; s < trainingSets; s++) {
-        printf("Inputs: ");
-        for (int i = 0; i < nn->input->neuronCount; i++) {
-            printf("%lf ", trainingInputs[s][i]);
+    // for (int s = 0; s < trainingSets; s++) {
+    //     printf("Inputs: ");
+    //     for (int i = 0; i < nn->input->neuronCount; i++) {
+    //         printf("%lf ", trainingInputs[s][i]);
+    //     }
+    //     printf("\nOutputs: ");
+    //     for (int i = 0; i < nn->output->neuronCount; i++) {
+    //         printf("%lf ", trainingOutputs[s][i]);
+    //     }
+    //     printf("\n");
+    // }
+
+    // Forward Propgation
+    for (int e = 0; e < epochs; e++) {
+        printf("EPOCH: %d\n", e);   
+        // Shuffle training data
+        shuffle(trainingInputs, trainingOutputs, trainingSets);
+        // Forward Prop and calculate error of output
+        double **errors = malloc(sizeof(double*) * trainingSets); // error[training sets][output neurons]
+        for (int s = 0; s < trainingSets; s++) {
+            runNN(nn, trainingInputs[s]);
+            errors[s] = malloc(sizeof(double) * nn->output->neuronCount);
+            for (int n = 0; n < nn->output->neuronCount; n++) {
+                errors[s][n] = error(nn->output->neurons[n]->output, trainingOutputs[s][n]);
+            }
+            // Display progress
+            printNN(nn);
+            printf("Expected Outputs: ");
+            for (int n = 0; n < nn->output->neuronCount; n++) {
+                printf("%lf ", trainingOutputs[s][n]);
+            }
+            printf("\n\n");
         }
-        printf("\nOutputs: ");
-        for (int i = 0; i < nn->output->neuronCount; i++) {
-            printf("%lf ", trainingOutputs[s][i]);
+        // Do back propogation
+
+        for (int s = 0; s < trainingSets; s++) {
+            free(errors[s]);
         }
-        printf("\n");
+        free(errors);
     }
 }
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <time.h>
 
 #include "neuralNetwork.h"
 
@@ -45,6 +46,8 @@ int readCommand() {
 // EXPORT <file stem>
 //      Exports current weights and biases. Reccomended to be done after training
 int main(void) {
+    
+    srand(time(NULL));
 
     //Initialization of neural network
     int inputCount = 0;
