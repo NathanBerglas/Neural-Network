@@ -1,26 +1,213 @@
-==216756== Memcheck, a memory error detector
-==216756== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==216756== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
-==216756== Command: ./bin/neuralNetwork.exe
-==216756== Parent PID: 216755
-==216756== 
-==216756== 
-==216756== HEAP SUMMARY:
-==216756==     in use at exit: 472 bytes in 1 blocks
-==216756==   total heap usage: 101 allocs, 100 frees, 18,176 bytes allocated
-==216756== 
-==216756== 472 bytes in 1 blocks are still reachable in loss record 1 of 1
-==216756==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
-==216756==    by 0x509864D: __fopen_internal (iofopen.c:65)
-==216756==    by 0x509864D: fopen@@GLIBC_2.2.5 (iofopen.c:86)
-==216756==    by 0x10ACAD: main (src/source.c:132)
-==216756== 
-==216756== LEAK SUMMARY:
-==216756==    definitely lost: 0 bytes in 0 blocks
-==216756==    indirectly lost: 0 bytes in 0 blocks
-==216756==      possibly lost: 0 bytes in 0 blocks
-==216756==    still reachable: 472 bytes in 1 blocks
-==216756==         suppressed: 0 bytes in 0 blocks
-==216756== 
-==216756== For lists of detected and suppressed errors, rerun with: -s
-==216756== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==456933== Memcheck, a memory error detector
+==456933== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==456933== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==456933== Command: ./bin/neuralNetwork.exe
+==456933== Parent PID: 456932
+==456933== 
+==456933== 
+==456933== Process terminating with default action of signal 2 (SIGINT)
+==456933==    at 0x512D885: write (write.c:26)
+==456933==    by 0x50A3EEC: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1180)
+==456933==    by 0x50A59E0: new_do_write (fileops.c:448)
+==456933==    by 0x50A59E0: _IO_new_do_write (fileops.c:425)
+==456933==    by 0x50A59E0: _IO_do_write@@GLIBC_2.2.5 (fileops.c:422)
+==456933==    by 0x50A46D4: _IO_new_file_xsputn (fileops.c:1243)
+==456933==    by 0x50A46D4: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+==456933==    by 0x508EFC9: outstring_func (vfprintf-internal.c:239)
+==456933==    by 0x508EFC9: __vfprintf_internal (vfprintf-internal.c:1593)
+==456933==    by 0x507979E: printf (printf.c:33)
+==456933==    by 0x10A048: printNN (src/neuralNetwork.c:212)
+==456933==    by 0x10A46F: trainNN (src/neuralNetwork.c:274)
+==456933==    by 0x10BF65: main (src/source.c:172)
+==456933== 
+==456933== HEAP SUMMARY:
+==456933==     in use at exit: 13,552 bytes in 96 blocks
+==456933==   total heap usage: 83,561 allocs, 83,465 frees, 3,018,208 bytes allocated
+==456933== 
+==456933== 0 bytes in 1 blocks are still reachable in loss record 1 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x109355: nInit (src/neuralNetwork.c:47)
+==456933==    by 0x10950E: layerInit (src/neuralNetwork.c:73)
+==456933==    by 0x109752: nnInit (src/neuralNetwork.c:102)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 8 bytes in 1 blocks are still reachable in loss record 2 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x109477: layerInit (src/neuralNetwork.c:66)
+==456933==    by 0x109752: nnInit (src/neuralNetwork.c:102)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 8 bytes in 1 blocks are still reachable in loss record 3 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10A3E7: trainNN (src/neuralNetwork.c:269)
+==456933==    by 0x10BF65: main (src/source.c:172)
+==456933== 
+==456933== 16 bytes in 1 blocks are still reachable in loss record 4 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10942E: layerInit (src/neuralNetwork.c:61)
+==456933==    by 0x109647: nnInit (src/neuralNetwork.c:88)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 16 bytes in 1 blocks are still reachable in loss record 5 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x109477: layerInit (src/neuralNetwork.c:66)
+==456933==    by 0x109647: nnInit (src/neuralNetwork.c:88)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 16 bytes in 1 blocks are still reachable in loss record 6 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10965E: nnInit (src/neuralNetwork.c:89)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 16 bytes in 1 blocks are still reachable in loss record 7 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10942E: layerInit (src/neuralNetwork.c:61)
+==456933==    by 0x109716: nnInit (src/neuralNetwork.c:98)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 16 bytes in 1 blocks are still reachable in loss record 8 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10942E: layerInit (src/neuralNetwork.c:61)
+==456933==    by 0x1096DC: nnInit (src/neuralNetwork.c:96)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 16 bytes in 1 blocks are still reachable in loss record 9 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10942E: layerInit (src/neuralNetwork.c:61)
+==456933==    by 0x109752: nnInit (src/neuralNetwork.c:102)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 24 bytes in 1 blocks are still reachable in loss record 10 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10930C: nInit (src/neuralNetwork.c:42)
+==456933==    by 0x10950E: layerInit (src/neuralNetwork.c:73)
+==456933==    by 0x109752: nnInit (src/neuralNetwork.c:102)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 32 bytes in 1 blocks are still reachable in loss record 11 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10956E: nnInit (src/neuralNetwork.c:80)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 32 bytes in 1 blocks are still reachable in loss record 12 of 28
+==456933==    at 0x4E0C8EB: realloc (vg_replace_malloc.c:1690)
+==456933==    by 0x10BF14: main (src/source.c:168)
+==456933== 
+==456933== 32 bytes in 1 blocks are still reachable in loss record 13 of 28
+==456933==    at 0x4E0C8EB: realloc (vg_replace_malloc.c:1690)
+==456933==    by 0x10BF32: main (src/source.c:169)
+==456933== 
+==456933== 32 bytes in 1 blocks are still reachable in loss record 14 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10A3A6: trainNN (src/neuralNetwork.c:266)
+==456933==    by 0x10BF65: main (src/source.c:172)
+==456933== 
+==456933== 32 bytes in 4 blocks are still reachable in loss record 15 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10BE6A: main (src/source.c:161)
+==456933== 
+==456933== 48 bytes in 2 blocks are still reachable in loss record 16 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10930C: nInit (src/neuralNetwork.c:42)
+==456933==    by 0x10950E: layerInit (src/neuralNetwork.c:73)
+==456933==    by 0x109647: nnInit (src/neuralNetwork.c:88)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 64 bytes in 4 blocks are still reachable in loss record 17 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10BE45: main (src/source.c:160)
+==456933== 
+==456933== 128 bytes in 1 blocks are still reachable in loss record 18 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x109477: layerInit (src/neuralNetwork.c:66)
+==456933==    by 0x109716: nnInit (src/neuralNetwork.c:98)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 128 bytes in 1 blocks are still reachable in loss record 19 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x109477: layerInit (src/neuralNetwork.c:66)
+==456933==    by 0x1096DC: nnInit (src/neuralNetwork.c:96)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 128 bytes in 16 blocks are still reachable in loss record 20 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x109355: nInit (src/neuralNetwork.c:47)
+==456933==    by 0x10950E: layerInit (src/neuralNetwork.c:73)
+==456933==    by 0x1096DC: nnInit (src/neuralNetwork.c:96)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 256 bytes in 2 blocks are still reachable in loss record 21 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x109355: nInit (src/neuralNetwork.c:47)
+==456933==    by 0x10950E: layerInit (src/neuralNetwork.c:73)
+==456933==    by 0x109647: nnInit (src/neuralNetwork.c:88)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 384 bytes in 16 blocks are still reachable in loss record 22 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10930C: nInit (src/neuralNetwork.c:42)
+==456933==    by 0x10950E: layerInit (src/neuralNetwork.c:73)
+==456933==    by 0x109716: nnInit (src/neuralNetwork.c:98)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 384 bytes in 16 blocks are still reachable in loss record 23 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x10930C: nInit (src/neuralNetwork.c:42)
+==456933==    by 0x10950E: layerInit (src/neuralNetwork.c:73)
+==456933==    by 0x1096DC: nnInit (src/neuralNetwork.c:96)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 472 bytes in 1 blocks are still reachable in loss record 24 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x509864D: __fopen_internal (iofopen.c:65)
+==456933==    by 0x509864D: fopen@@GLIBC_2.2.5 (iofopen.c:86)
+==456933==    by 0x10BC9D: main (src/source.c:135)
+==456933== 
+==456933== 1,024 bytes in 1 blocks are still reachable in loss record 25 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x5097BA3: _IO_file_doallocate (filedoalloc.c:101)
+==456933==    by 0x50A6CDF: _IO_doallocbuf (genops.c:347)
+==456933==    by 0x50A5F5F: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:744)
+==456933==    by 0x50A46D4: _IO_new_file_xsputn (fileops.c:1243)
+==456933==    by 0x50A46D4: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+==456933==    by 0x508E14C: outstring_func (vfprintf-internal.c:239)
+==456933==    by 0x508E14C: __vfprintf_internal (vfprintf-internal.c:1263)
+==456933==    by 0x507979E: printf (printf.c:33)
+==456933==    by 0x10A389: trainNN (src/neuralNetwork.c:262)
+==456933==    by 0x10BF65: main (src/source.c:172)
+==456933== 
+==456933== 2,048 bytes in 16 blocks are still reachable in loss record 26 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x109355: nInit (src/neuralNetwork.c:47)
+==456933==    by 0x10950E: layerInit (src/neuralNetwork.c:73)
+==456933==    by 0x109716: nnInit (src/neuralNetwork.c:98)
+==456933==    by 0x10B974: main (src/source.c:75)
+==456933== 
+==456933== 4,096 bytes in 1 blocks are still reachable in loss record 27 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x5097BA3: _IO_file_doallocate (filedoalloc.c:101)
+==456933==    by 0x50A6CDF: _IO_doallocbuf (genops.c:347)
+==456933==    by 0x50A5CDB: _IO_file_underflow@@GLIBC_2.2.5 (fileops.c:485)
+==456933==    by 0x50A6D95: _IO_default_uflow (genops.c:362)
+==456933==    by 0x507C0CF: __vfscanf_internal (vfscanf-internal.c:628)
+==456933==    by 0x507B141: __isoc99_scanf (isoc99_scanf.c:30)
+==456933==    by 0x10B769: readCommand (src/source.c:18)
+==456933==    by 0x10B892: main (src/source.c:58)
+==456933== 
+==456933== 4,096 bytes in 1 blocks are still reachable in loss record 28 of 28
+==456933==    at 0x4E050C5: malloc (vg_replace_malloc.c:442)
+==456933==    by 0x5097BA3: _IO_file_doallocate (filedoalloc.c:101)
+==456933==    by 0x50A6CDF: _IO_doallocbuf (genops.c:347)
+==456933==    by 0x50A44C3: _IO_file_xsgetn (fileops.c:1287)
+==456933==    by 0x5098BA8: fread (iofread.c:38)
+==456933==    by 0x10BDA1: main (src/source.c:151)
+==456933== 
+==456933== LEAK SUMMARY:
+==456933==    definitely lost: 0 bytes in 0 blocks
+==456933==    indirectly lost: 0 bytes in 0 blocks
+==456933==      possibly lost: 0 bytes in 0 blocks
+==456933==    still reachable: 13,552 bytes in 96 blocks
+==456933==         suppressed: 0 bytes in 0 blocks
+==456933== 
+==456933== For lists of detected and suppressed errors, rerun with: -s
+==456933== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
