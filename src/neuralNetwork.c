@@ -43,12 +43,12 @@ double inputBiasInit() {
 struct neuron *nInit(int neuronCountNextLayer, bool inputNeuron) {
     struct neuron *n = malloc(sizeof(struct neuron));
     if (!n) {
-        printf("ERROR: Not enough stack memory! n\n");
+        printf("ERROR: Not enough heap memory! n\n");
         assert(0);
     }
     n->weights = malloc(neuronCountNextLayer * sizeof(double));
     if (!n->weights) {
-        printf("ERROR: Not enough stack memory! n->weights\n");
+        printf("ERROR: Not enough heap memory! n->weights\n");
         assert(0);
     }
     for (int nextn = 0; nextn < neuronCountNextLayer; nextn++) {
@@ -62,12 +62,12 @@ struct neuron *nInit(int neuronCountNextLayer, bool inputNeuron) {
 struct layer *layerInit(int neuronCount, int neuronCountNextLayer, bool inputLayer) {
     struct layer *l = malloc(sizeof(struct layer));
     if (!l) {
-        printf("ERROR: Not enough stack memory! l\n");
+        printf("ERROR: Not enough heap memory! l\n");
         assert(0);
     }
     l->neurons = malloc(neuronCount * sizeof(struct neuron*));
     if (!l->neurons) {
-        printf("ERROR: Not enough stack memory! l->neurons\n");
+        printf("ERROR: Not enough heap memory! l->neurons\n");
         assert(0);
     }
     assert(l);
@@ -81,7 +81,7 @@ struct layer *layerInit(int neuronCount, int neuronCountNextLayer, bool inputLay
 struct neuralNetwork *nnInit(int inputNeuronCount, int hiddenLayerCount, int *hiddenLayerNeuronCount, int outputNeuronCount) {
     struct neuralNetwork *nn = malloc(sizeof(struct neuralNetwork));
     if (!nn) {
-        printf("ERROR: Not enough stack memory! nn\n");
+        printf("ERROR: Not enough heap memory! nn\n");
         assert(0);
     }
     assert(inputNeuronCount > 0);
@@ -90,7 +90,7 @@ struct neuralNetwork *nnInit(int inputNeuronCount, int hiddenLayerCount, int *hi
     nn->input = layerInit(inputNeuronCount, hiddenLayerNeuronCount[0], 1);
     nn->hidden = malloc(hiddenLayerCount * sizeof(struct layer*));
     if (!nn->hidden) {
-        printf("ERROR: Not enough stack memory! nn->hidden\n");
+        printf("ERROR: Not enough heap memory! nn->hidden\n");
         assert(0);
     }
     for (int hl = 0; hl < hiddenLayerCount; hl++) {
@@ -294,20 +294,22 @@ void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **tra
         for (int s = 0; s < setCount; s++) { 
             // Calculate Error of descent: Summed for all test cases
             // Initialize Errors and set them all to zero. Must be done as it is summed over the course of cases
-            int bIndex = 0;
-            int wIndex = 0;
             int weightCount = nn->input->neuronCount * nn->hidden[0]->neuronCount + nn->hidden[nn->hiddenLayerCount - 1]->neuronCount * nn->output->neuronCount;
             int biasCount = nn->hidden[0]->neuronCount + nn->output->neuronCount;
             for (int l = 1; l < nn->hiddenLayerCount; l++) {
                 weightCount += nn->hidden[l - 1]->neuronCount * nn->hidden[l]->neuronCount;
                 biasCount += nn->hidden[l]->neuronCount;
             }
-            double *wGradient = malloc(sizeof(double) * weightCount);
-            double *bGradient = malloc(sizeof(double) * biasCount);
-            double *evenError = malloc(sizeof(double) * nn->output->neuronCount); // Switch back and forth to keep the past error signal
-            double *oddError = malloc(sizeof(double) * 0);
-            if (!wGradient && !bGradient && !evenError && !oddError) { printf("ERROR: Not enough stack memory! gradient/errors\n"); assert(0); }
-            for (int c = 0; c < casesPerSet; c++) {               
+            double *wGradient = calloc(weightCount, sizeof(double));
+            double *bGradient = calloc(biasCount, sizeof(double));
+            if (!wGradient && !bGradient) { printf("ERROR: Not enough heap memory! gradients\n"); assert(0); }
+            // Go through each test case and sum gradients
+            for (int c = 0; c < casesPerSet; c++) {
+                int bIndex = 0;
+                int wIndex = 0;
+                double *evenError = malloc(sizeof(double) * nn->output->neuronCount); // Switch back and forth to keep the past error signal
+                double *oddError = malloc(sizeof(double) * 0);
+                if (!evenError && !oddError) { printf("ERROR: Not enough heap memory! errors\n"); assert(0); }
                 runNN(nn, trainingInputs[s * casesPerSet + c]);
                 // Calculate output Error signal
                 for (int n = 0; n < nn->output->neuronCount; n++) {
@@ -318,19 +320,19 @@ void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **tra
                                 nn->hidden[nn->hiddenLayerCount - 1]->neurons[n]->bias;
                     double dAct = dActivation(z);
                     double dErr = dError(nn->output->neurons[n]->output, trainingOutputs[s * casesPerSet + c][n]);
-                    evenError[c * casesPerSet + n] = dAct * dErr; // Error Signal
-                    for (int prevn = 0; prevn < nn->output->neuronCount; prevn++) {
-                        bGradient[bIndex] = dAct * dErr; 
-                        bIndex++;
-                    }
-                } 
+                    evenError[n] = dAct * dErr; // Error Signal
+                    assert(bIndex <= n);
+                    bGradient[bIndex] = dAct * dErr; 
+                    bIndex++;
+                }
                 // Backpropgate error signals through hidden layers
-                for (int l = nn->hiddenLayerCount - 1; l >= 0; l++ ) {
+                for (int l = nn->hiddenLayerCount - 1; l >= 0; l-- ) {
                     double **errorPtr = &oddError; // Alternate errors to always keep last layers error signal
                     double **pastErrorPtr = &evenError;
                     if (((nn->hiddenLayerCount - l) % 2) == 0) { errorPtr = &evenError; pastErrorPtr = &oddError; }
                     free(*errorPtr);
                     *errorPtr = malloc(sizeof(double) * nn->hidden[l]->neuronCount); // Resize to new size, also deletes old contents
+                    if (!*errorPtr) { printf("ERROR: Not enough heap memory! errorPtr\n"); assert(0); }
                     for (int n = 0; n < nn->hidden[l]->neuronCount; n++) { // j
                         double z = 0;
                         double dErr = 0;
@@ -345,56 +347,56 @@ void trainNN(struct neuralNetwork *nn, const double lr, int epochs, double **tra
                                     lastLayer->neurons[prevn]->weights[n] +
                                     lastLayer->neurons[prevn]->bias;
                         for (int nextn = 0; nextn < nextLayer->neuronCount; nextn++)
-                            dErr += nextLayer->neurons[nextn]->weights[n] * // Takes the error signal from the next layer, this is backpropogated
-                                    *pastErrorPtr[nextn];
+                            dErr += nn->hidden[l]->neurons[n]->weights[nextn] * // Takes the error signal from the next layer, this is backpropogated
+                                    (*pastErrorPtr)[nextn];
                         double dAct = dActivation(z);
-                        *errorPtr[n] = dAct * dErr;
+                        (*errorPtr)[n] = dAct * dErr;
                         for (int nextn = 0; nextn < nextLayer->neuronCount; nextn++) {
-                            wGradient[wIndex] = nn->hidden[l]->neurons[n]->output * *pastErrorPtr[nextn];
+                            wGradient[wIndex] += nn->hidden[l]->neurons[n]->output * (*pastErrorPtr)[nextn];
                             wIndex++;
                         }
-                        bGradient[bIndex] = *errorPtr[n]; 
+                        bGradient[bIndex] = (*errorPtr)[n]; 
                         bIndex++;
                     }
                     for (int n = 0; n < nn->input->neuronCount; n++) {
-                        for(int nextn = 0; n < nn->hidden[0]->neuronCount; n++) {
-                            wGradient[wIndex] = nn->input->neurons[n]->output * *errorPtr[nextn];
+                        for(int nextn = 0; nextn < nn->hidden[0]->neuronCount; nextn++) {
+                            wGradient[wIndex] += nn->input->neurons[n]->output * (*errorPtr)[nextn];
                         }
                     }
                 }
+                free(evenError);
+                free(oddError);
             }
             // Adjust weights according to calculated gradient
-            wIndex = 0;
-            bIndex = 0;
+            int wIndex = 0;
+            int bIndex = 0;
             for (int n = 0; n < nn->output->neuronCount; n++) {
                 for (int prevn = 0; prevn < nn->hidden[nn->hiddenLayerCount - 1]->neuronCount; prevn++) {
-                    nn->hidden[nn->hiddenLayerCount - 1]->neurons[prevn]->weights[n] -= lr * wGradient[wIndex];
+                    nn->hidden[nn->hiddenLayerCount - 1]->neurons[prevn]->weights[n] -= lr * wGradient[wIndex] / casesPerSet;
                     wIndex++;
                 }
-                nn->output->neurons[n]->bias -= lr * bGradient[bIndex];
+                nn->output->neurons[n]->bias -= lr * bGradient[bIndex] / casesPerSet;
                 bIndex++;
             }
-            for (int l = nn->hiddenLayerCount - 2; l >= 0; l++) {
+            for (int l = nn->hiddenLayerCount - 2; l >= 0; l--) {
                 for (int n = 0; n < nn->hidden[l]->neuronCount; n++) {
                     for (int nextn = 0; nextn < nn->hidden[l + 1]->neuronCount; nextn++) {
-                        nn->hidden[l]->neurons[n]->weights[nextn] -= lr * wGradient[wIndex];
+                        nn->hidden[l]->neurons[n]->weights[nextn] -= lr * wGradient[wIndex] / casesPerSet;
                         wIndex++;
                     }
-                    nn->hidden[l]->neurons[n]->bias -= lr * bGradient[bIndex];
+                    nn->hidden[l]->neurons[n]->bias -= lr * bGradient[bIndex] / casesPerSet;
                     bIndex++;
                 }
             }
             for (int n = 0; n < nn->input->neuronCount; n++) {
                 for (int nextn = 0; nextn < nn->hidden[0]->neuronCount; nextn++) {
-                    wGradient[wIndex] -= lr * wGradient[wIndex];
+                    wGradient[wIndex] -= lr * wGradient[wIndex] / casesPerSet;
                     wIndex++;
                 }
             }
             // Free allocated memory
             free(wGradient);
             free(bGradient);
-            free(evenError);
-            free(oddError);
         }
     }
 }
