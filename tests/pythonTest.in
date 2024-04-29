@@ -1,0 +1,4 @@
+NEW 10 4 3 32 32 32
+TRAIN 0.6 1000 pythonTest
+EXPORT pythonTest
+

@@ -146,6 +146,7 @@ int main(void) {
             int maxSets = 4;
             double **testsIn = malloc(maxSets * sizeof(double*));
             double **testsOut = malloc(maxSets * sizeof(double*));
+            assert(testsIn && testsOut);
             // Read tests from file
             while(!feof(file)) {
                 if (fread(in, sizeof(double), inputNodes, file) < inputNodes) {
@@ -155,7 +156,8 @@ int main(void) {
                 if (trainingSets + 1 > maxSets) { // Doubling strategy to allow infinite test cases
                     maxSets *= 2;
                     testsIn = realloc(testsIn, maxSets * sizeof(double*));
-                    testsOut = realloc(testsIn, maxSets * sizeof(double*));
+                    testsOut = realloc(testsOut, maxSets * sizeof(double*));
+                    assert(in && out);
                 }
                 testsIn[trainingSets] = malloc(sizeof(double) * inputNodes);
                 testsOut[trainingSets] = malloc(sizeof(double) * outputNodes);
@@ -170,6 +172,7 @@ int main(void) {
             // Train NN
             
             trainNN(nn, lr, epochs, testsIn, testsOut, trainingSets);
+            printf("Training done!\n");
             // Clean up
             for (int i = 0; i < trainingSets; i++) { // Free 'in's and 'out's
                 free(testsIn[i]);

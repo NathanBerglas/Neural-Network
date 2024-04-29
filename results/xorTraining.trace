@@ -1,8 +1,9 @@
+Training done!
 Inputs: 0.000000, 0.000000
-Outputs: 0.999913
+Outputs: 0.463636
 Inputs: 0.000000, 1.000000
-Outputs: 0.999923
+Outputs: 0.541891
 Inputs: 1.000000, 0.000000
-Outputs: 0.999923
+Outputs: 0.482104
 Inputs: 1.000000, 1.000000
-Outputs: 0.999930
+Outputs: 0.509212

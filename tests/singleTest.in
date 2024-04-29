@@ -1,0 +1,6 @@
+NEW 2 1 32 32 32
+TRAIN 1.6 10000 singleTest
+RUN 1.0 1.0
+RUN 1.0 0.0
+RUN 0.0 1.0
+RUN 0.0 0.0
